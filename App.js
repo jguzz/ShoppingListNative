@@ -1,6 +1,6 @@
 //Main components... All other components will be under APP.
 import React, {useState} from "react";
-import {View, Text, StyleSheet, FlatList} from 'react-native';
+import {View, Text, StyleSheet, FlatList, Alert} from 'react-native';
 
 //UUID for id generation
 import uuid from 'react-native-uuid';
@@ -28,9 +28,13 @@ const App = () => {
 
   //Used to add items to the items[{}] state.
   const addItem = (text) => {
-    setItems(prevItems => {
-      return [{id: uuid.v4(), text}, ...prevItems];
-    });
+    if(!text) {
+      Alert.alert('No Item Was Entered', 'Please enter an item!', {text: 'Ok'});
+    }else {
+      setItems(prevItems => {
+        return [{id: uuid.v4(), text}, ...prevItems];
+      });
+    }
   }
 
   return (
