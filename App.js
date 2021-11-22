@@ -1,112 +1,64 @@
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- *
- * @format
- * @flow strict-local
- */
+//Main components... All other components will be under APP.
+import React, {useState} from "react";
+import {View, Text, StyleSheet, FlatList, Alert} from 'react-native';
 
-import React from 'react';
-import type {Node} from 'react';
-import {
-  SafeAreaView,
-  ScrollView,
-  StatusBar,
-  StyleSheet,
-  Text,
-  useColorScheme,
-  View,
-} from 'react-native';
+//UUID for id generation
+import uuid from 'react-native-uuid';
 
-import {
-  Colors,
-  DebugInstructions,
-  Header,
-  LearnMoreLinks,
-  ReloadInstructions,
-} from 'react-native/Libraries/NewAppScreen';
+//Components 
+import Header from "./components/Header";
+import ListItem from "./components/ListItem";
+import AddItem from "./components/AddItem";
 
-const Section = ({children, title}): Node => {
-  const isDarkMode = useColorScheme() === 'dark';
+const App = () => {
+  //Items an array of objects used to track shopping list items.
+  const [items, setItems] = useState([
+    {id: uuid.v4(), text: 'Milk'},
+    {id: uuid.v4(), text: 'Eggs'},
+    {id: uuid.v4(), text: 'Yogurt'},
+    {id: uuid.v4(), text: 'Cheese'},
+  ]);
+
+  // Used to delete an item, based on id, from the items [{}]
+  const deleteItem = (id) => {
+    setItems(prevItems => {
+      return prevItems.filter(item => item.id != id);
+    });
+  }
+
+  //Used to add items to the items[{}] state.
+  const addItem = (text) => {
+    if(!text) {
+      Alert.alert('No Item Was Entered', 'Please enter an item!', {text: 'Ok'});
+    }else {
+      setItems(prevItems => {
+        return [{id: uuid.v4(), text}, ...prevItems];
+      });
+    }
+  }
+
   return (
-    <View style={styles.sectionContainer}>
-      <Text
-        style={[
-          styles.sectionTitle,
-          {
-            color: isDarkMode ? Colors.white : Colors.black,
-          },
-        ]}>
-        {title}
-      </Text>
-      <Text
-        style={[
-          styles.sectionDescription,
-          {
-            color: isDarkMode ? Colors.light : Colors.dark,
-          },
-        ]}>
-        {children}
-      </Text>
+    <View style={styles.container}>
+      <Header title='Shopping List'/>
+      <AddItem addItem={addItem}/>
+      <FlatList
+       data={items}
+       renderItem={({item}) => (
+         <ListItem item={item} deleteItem={deleteItem}/>
+       )}
+      //keyExtractor={item => item.id}
+      />
     </View>
   );
 };
 
-const App: () => Node = () => {
-  const isDarkMode = useColorScheme() === 'dark';
-
-  const backgroundStyle = {
-    backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
-  };
-
-  return (
-    <SafeAreaView style={backgroundStyle}>
-      <StatusBar barStyle={isDarkMode ? 'light-content' : 'dark-content'} />
-      <ScrollView
-        contentInsetAdjustmentBehavior="automatic"
-        style={backgroundStyle}>
-        <Header />
-        <View
-          style={{
-            backgroundColor: isDarkMode ? Colors.black : Colors.white,
-          }}>
-          <Section title="Shopping List Native">
-            Edit <Text style={styles.highlight}>App.js</Text> to change this
-            screen and then come back to see your edits.
-          </Section>
-          <Section title="Testing testing">
-            <ReloadInstructions />
-          </Section>
-          <Section title="Debug">
-            <DebugInstructions />
-          </Section>
-          <Section title="Learn More">
-            Read the docs to discover what to do next:
-          </Section>
-          <LearnMoreLinks />
-        </View>
-      </ScrollView>
-    </SafeAreaView>
-  );
-};
-
+//Styles for App.
 const styles = StyleSheet.create({
-  sectionContainer: {
-    marginTop: 32,
-    paddingHorizontal: 24,
-  },
-  sectionTitle: {
-    fontSize: 24,
-    fontWeight: '600',
-  },
-  sectionDescription: {
-    marginTop: 8,
-    fontSize: 18,
-    fontWeight: '400',
-  },
-  highlight: {
-    fontWeight: '700',
-  },
-});
+  container: {
+    flex: 1,
+    paddingTop: 60
+  }
+})
 
 export default App;
+
